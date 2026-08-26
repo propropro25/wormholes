@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Enter a randomly selected research path through historical literature, scholarly indexes, personal accounts and adverse-event records.">
+  <title>Ready for a Rabbit Hole?</title>
+
+  <style>
+    :root {
+      --ink:#090909;
+      --muted:#717175;
+      --line:#dedee2;
+      --soft:#f5f5f7;
+      --page:#fff;
+      --dark:#090909;
+    }
+
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+
+    body {
+      margin:0;
+      background:var(--page);
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    button, a { font:inherit; }
+
+    .site-header {
+      position:sticky;
+      top:0;
+      z-index:20;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .header-inner, main {
+      width:min(960px,calc(100% - 44px));
+      margin:auto;
+    }
+
+    .header-inner {
+      min-height:68px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+    }
+
+    .brand {
+      color:var(--ink);
+      font-weight:800;
+      letter-spacing:-.02em;
+      text-decoration:none;
+    }
+
+    .library-link {
+      color:var(--muted);
+      font-size:14px;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+
+    .library-link:hover { color:var(--ink); }
+
+    main { padding:clamp(55px,9vw,105px) 0 80px; }
+
+    .eyebrow {
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+    }
+
+    h1 {
+      max-width:900px;
+      margin:15px 0 25px;
+      font-size:clamp(50px,9vw,90px);
+      line-height:.91;
+      letter-spacing:-.067em;
+    }
+
+    .lead {
+      max-width:745px;
+      margin:0;
+      color:var(--muted);
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:clamp(19px,2.8vw,24px);
+      line-height:1.58;
+    }
+
+    .portal {
+      position:relative;
+      min-height:420px;
+      display:flex;
+      margin-top:48px;
+      overflow:hidden;
+      align-items:flex-end;
+      padding:clamp(29px,6vw,58px);
+      border-radius:29px;
+      background:
+        radial-gradient(circle at 78% 20%,rgba(255,255,255,.11),transparent 29%),
+        radial-gradient(circle at 92% 86%,rgba(255,255,255,.06),transparent 34%),
+        var(--dark);
+      color:#fff;
+      box-shadow:0 25px 65px rgba(0,0,0,.14);
+    }
+
+    .rings {
+      position:absolute;
+      top:-110px;
+      right:-90px;
+      width:410px;
+      height:410px;
+      border:1px solid #262626;
+      border-radius:50%;
+      pointer-events:none;
+    }
+
+    .rings::before, .rings::after {
+      content:"";
+      position:absolute;
+      border:1px solid #242424;
+      border-radius:50%;
+    }
+
+    .rings::before { inset:52px; }
+    .rings::after { inset:108px; }
+
+    .portal-content { position:relative; z-index:2; max-width:670px; }
+
+    .portal-count {
+      color:#808085;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+
+    .portal h2 {
+      margin:19px 0 15px;
+      font-size:clamp(32px,5.5vw,54px);
+      line-height:1.02;
+      letter-spacing:-.052em;
+    }
+
+    .portal-copy {
+      max-width:610px;
+      margin:0;
+      color:#a0a0a5;
+      font-size:17px;
+      line-height:1.6;
+    }
+
+    .enter-button {
+      display:inline-flex;
+      min-height:53px;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin-top:31px;
+      padding:0 23px;
+      border:0;
+      border-radius:999px;
+      background:#fff;
+      color:#000;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .18s ease,background .18s ease;
+    }
+
+    .enter-button:hover { transform:translateY(-2px); background:#ededed; }
+    .enter-button:active { transform:translateY(0); }
+
+    .enter-button:focus-visible {
+      outline:3px solid #8eb5ff;
+      outline-offset:4px;
+    }
+
+    .return-note {
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      margin-top:24px;
+      padding-top:22px;
+      border-top:1px solid #29292c;
+      color:#85858a;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .back-icon {
+      display:grid;
+      flex:0 0 auto;
+      width:28px;
+      height:28px;
+      place-items:center;
+      border:1px solid #38383b;
+      border-radius:50%;
+      color:#ddd;
+    }
+
+    .paths {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .path {
+      padding:20px;
+      border:1px solid var(--line);
+      border-radius:17px;
+    }
+
+    .path-number {
+      display:grid;
+      width:32px;
+      height:32px;
+      place-items:center;
+      margin-bottom:22px;
+      border-radius:50%;
+      background:var(--soft);
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+    }
+
+    .path h3 {
+      margin:0 0 7px;
+      font-size:17px;
+      letter-spacing:-.025em;
+    }
+
+    .path p {
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .context-note {
+      margin-top:40px;
+      padding:18px 20px;
+      border-radius:15px;
+      background:var(--soft);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.55;
+    }
+
+    .context-note strong { color:var(--ink); }
+
+    footer {
+      padding:28px 20px 46px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      text-align:center;
+      font-size:13px;
+    }
+
+    @media (max-width:800px) {
+      .paths { grid-template-columns:repeat(2,1fr); }
+    }
+
+    @media (max-width:560px) {
+      .header-inner, main { width:min(100% - 30px,960px); }
+      .library-link { font-size:12px; }
+      main { padding-top:48px; }
+      .portal { min-height:475px; margin-top:36px; border-radius:22px; }
+      .enter-button { width:100%; }
+      .paths { grid-template-columns:1fr; }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      *, *::before, *::after {
+        scroll-behavior:auto !important;
+        transition:none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./">Wormholes</a>
+      <a class="library-link" href="https://propropro25.github.io/homebase/">Research Library ↗</a>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="eyebrow">Unplanned paths through the archive</div>
+      <h1>Ready for a rabbit hole?</h1>
+      <p class="lead">
+        Begin with a question you did not choose. Follow it through old medical
+        language, modern indexes, personal accounts and records that rarely appear together.
+      </p>
+
+      <article class="portal">
+        <div class="rings" aria-hidden="true"></div>
+        <div class="portal-content">
+          <div class="portal-count">13 possible entrances</div>
+          <h2>Enter before you know where it leads.</h2>
+          <p class="portal-copy">
+            Every click opens one search path at random. What you find depends on what was
+            recorded, how it was named and what you choose to follow next.
+          </p>
+
+          <button class="enter-button" id="enterButton" type="button">
+            Enter a rabbit hole <span aria-hidden="true">→</span>
+          </button>
+
+          <div class="return-note">
+            <span class="back-icon" aria-hidden="true">←</span>
+            <span>When you are ready, use your browser’s <strong>Back</strong> button to return and enter somewhere else.</span>
+          </div>
+        </div>
+      </article>
+
+      <div class="paths">
+        <article class="path">
+          <div class="path-number">01</div>
+          <h3>Historical language</h3>
+          <p>Search the terms used in medical literature before 1950.</p>
+        </article>
+        <article class="path">
+          <div class="path-number">02</div>
+          <h3>Indexed research</h3>
+          <p>Move through PubMed and Google Scholar rather than a predetermined reading list.</p>
+        </article>
+        <article class="path">
+          <div class="path-number">03</div>
+          <h3>Personal accounts</h3>
+          <p>Find first-person reports using searches limited to Reddit.</p>
+        </article>
+        <article class="path">
+          <div class="path-number">04</div>
+          <h3>Reported events</h3>
+          <p>Enter searchable adverse-event records and examine individual reports directly.</p>
+        </article>
+      </div>
+
+      <div class="context-note">
+        <strong>A search result is an entrance, not a conclusion.</strong>
+        Historical terminology changes over time. Personal reports can reveal experiences without establishing causation, and passive-reporting databases contain reports that have not necessarily been verified. Follow sources, compare definitions and keep the distance between observation and inference visible.
+      </div>
+    </section>
+  </main>
+
+  <footer>Thirteen entrances · no predetermined route</footer>
+
+  <script>
+    const wormholes = [
+      {
+        type:"Historical scholarship",
+        url:"https://scholar.google.com/scholar?q=death+post-vaccinal&hl=en&as_sdt=0%2C10&as_yhi=1949"
+      },
+      {
+        type:"Historical scholarship",
+        url:"https://scholar.google.com/scholar?hl=en&as_sdt=0%2C10&as_yhi=1949&q=tetanus+post-vaccinal"
+      },
+      {
+        type:"Historical scholarship",
+        url:"https://scholar.google.com/scholar?hl=en&as_sdt=0%2C10&as_yhi=1949&q=seizure+post-vaccinal"
+      },
+      {
+        type:"Historical scholarship",
+        url:"https://scholar.google.com/scholar?hl=en&as_sdt=0%2C10&as_yhi=1949&q=Myelitis+vaccinal"
+      },
+      {
+        type:"Early medical literature",
+        url:"https://scholar.google.com/scholar?q=tetanus+following+vaccination&hl=en&as_sdt=0%2C10&as_yhi=1911"
+      },
+      {
+        type:"Scholarly search",
+        url:"https://scholar.google.com/scholar?hl=en&as_sdt=0%2C10&as_yhi=2010&q=antibodies+no+immunity+autoimmunity+vaccine"
+      },
+      {
+        type:"Personal accounts",
+        url:"https://www.google.com/search?q=site%3Areddit.com+pfizer+2x+antibodies+high+chronic"
+      },
+      {
+        type:"Personal accounts",
+        url:"https://www.google.com/search?q=site%3Areddit.com+vaccinated+antibodies+high+chronic&tbs=cdr%3A1%2Ccd_max%3A2024"
+      },
+      {
+        type:"Personal accounts",
+        url:"https://www.google.com/search?q=site%3Areddit.com+vaccine+ruined+my+life&tbs=cdr%3A1%2Ccd_max%3A2024"
+      },
+      {
+        type:"Historical experiments",
+        url:"https://www.google.com/search?q=site%3Arupress.org%2Fjem+experimental+polio"
+      },
+      {
+        type:"PubMed index",
+        url:"https://pubmed.ncbi.nlm.nih.gov/?term=post-vaccinal"
+      },
+      {
+        type:"PubMed index",
+        url:"https://pubmed.ncbi.nlm.nih.gov/?term=adverse+reaction+vaccine+neurologic&sort=date"
+      },
+      {
+        type:"Adverse-event reports",
+        url:"https://medalerts.org/vaersdb/findfield.php?TABLE=ON&GROUP1=AGE&EVENTS=ON&PERPAGE=100&FOLLOWOPTIONS=LATEST&ESORT=ENTRY-DATE&REVERSESORT=ON&DIED=Yes&AGES%5B%5D=1&AGES%5B%5D=2&AGES%5B%5D=3&AGES%5B%5D=4"
+      }
+    ];
+
+    let previousIndex = Number(sessionStorage.getItem("lastWormholeIndex"));
+
+    function enterWormhole() {
+      let nextIndex;
+      do {
+        nextIndex = Math.floor(Math.random() * wormholes.length);
+      } while (wormholes.length > 1 && nextIndex === previousIndex);
+
+      previousIndex = nextIndex;
+      sessionStorage.setItem("lastWormholeIndex", String(nextIndex));
+      sessionStorage.setItem("lastWormholeType", wormholes[nextIndex].type);
+      window.location.href = wormholes[nextIndex].url;
+    }
+
+    document.getElementById("enterButton").addEventListener("click", enterWormhole);
+
+    document.addEventListener("keydown", event => {
+      const tag = document.activeElement && document.activeElement.tagName;
+      const isInteractive = ["INPUT","BUTTON","A","TEXTAREA","SELECT"].includes(tag);
+      if (event.code === "Space" && !isInteractive) {
+        event.preventDefault();
+        enterWormhole();
+      }
+    });
+  </script>
+</body>
+</html>
